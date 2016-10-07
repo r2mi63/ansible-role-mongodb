@@ -16,6 +16,7 @@ galaxy_info:
   - name: Debian
     versions:
     - wheezy
+    - jessie
   galaxy_tags:
   - database
   - database:nosql
