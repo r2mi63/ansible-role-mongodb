@@ -1,4 +1,6 @@
 ---
+- debug: var=mongodb_replication_params
+
 
 - name: Include installation on Debian-based OS
   include: install.deb.yml
@@ -12,7 +14,7 @@
 - name: Include replication and auth configuration
   include: replication_init_auth.yml
   when:
-    - mongodb_replication_replset
+    - mongodb_replication_replset is defined
     - mongodb_replication_replset != ''
     - mongodb_security_authorization == 'enabled'
     - mongodb_master is defined
@@ -21,7 +23,9 @@
 
 - name: Include replication configuration
   include: replication.yml
-  when: mongodb_replication_replset and mongodb_replication_replset != ''
+  when:
+    - mongodb_replication_replset is defined
+    - mongodb_replication_replset != ''
   tags: [mongodb]
 
 - name: Check user admin is exists
@@ -60,7 +64,7 @@
   with_items:
     - "{{ mongodb_users | default([]) }}"
   when:
-    - mongodb_replication_replset
+    - mongodb_replication_replset is defined
     - mongodb_replication_replset != ''
     - mongodb_security_authorization == 'enabled'
     - mongodb_master is defined
@@ -80,9 +84,9 @@
     login_port: "{{ mongodb_net_port }}"
   with_items:
     - "{{ mongodb_users | default([]) }}"
-  when: ( mongodb_security_authorization == 'enabled'
-          and (not mongodb_replication_replset
-          or mongodb_replication_replset == '') )
+  when:
+    - mongodb_security_authorization == 'enabled'
+    - (not mongodb_replication_replset or mongodb_replication_replset == '')
   no_log: mongodb_role_no_log
   tags: [mongodb]
 
