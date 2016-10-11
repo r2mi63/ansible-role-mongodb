@@ -1,6 +1,4 @@
 ---
-- debug: var=mongodb_replication_params
-
 
 - name: Include installation on Debian-based OS
   include: install.deb.yml
