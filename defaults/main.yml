@@ -1,6 +1,6 @@
 ---
 # no_log for users setup (default: True)
-mongodb_role_no_log: false
+mongodb_role_no_log: true # Only set to false for debug purpose
 
 mongodb_package: mongodb-org
 mongodb_version: "3.2"

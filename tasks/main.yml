@@ -37,7 +37,7 @@
   when:
     - mongodb_security_authorization == 'enabled'
     - (not mongodb_replication_replset or mongodb_replication_replset == '')
-  no_log: mongodb_role_no_log
+  no_log: "{{ mongodb_role_no_log }}"
   tags: [mongodb]
 
 - name: Include authorization configuration
@@ -67,7 +67,7 @@
     - mongodb_security_authorization == 'enabled'
     - mongodb_master is defined
     - mongodb_master
-  no_log: mongodb_role_no_log
+  no_log: "{{ mongodb_role_no_log }}"
   tags: [mongodb]
 
 - name: create normal users without replicaset
@@ -85,7 +85,7 @@
   when:
     - mongodb_security_authorization == 'enabled'
     - (not mongodb_replication_replset or mongodb_replication_replset == '')
-  no_log: mongodb_role_no_log
+  no_log: "{{ mongodb_role_no_log }}"
   tags: [mongodb]
 
 - name: Include MMS Agent configuration
