@@ -3,7 +3,8 @@
 - include_vars: "{{ansible_distribution}}.yml"
 
 - name: Check if running on systemd
-  stat: path=/sbin/init
+  stat:
+    path: /sbin/init
   register: sbin_init
   changed_when: false
   always_run: yes # side-effect free, so it can be run in check-mode as well
@@ -15,11 +16,20 @@
 
 
 - name: Add systemd configuration if present
-  copy: src=mongodb.service dest="/lib/systemd/system/{{ mongodb_daemon_name }}.service" owner=root group=root mode=0640
+  copy:
+    src: mongodb.service
+    dest: "/lib/systemd/system/{{ mongodb_daemon_name }}.service"
+    owner: root
+    group: root
+    mode: 0640
   when: mongodb_is_systemd
 
 - name: Add symlink for systemd
-  file: src=/lib/systemd/system/mongodb.service dest="/etc/systemd/system/multi-user.target.wants/{{ mongodb_daemon_name }}.service" state=link force=yes
+  file:
+    src: /lib/systemd/system/mongodb.service
+    dest: "/etc/systemd/system/multi-user.target.wants/{{ mongodb_daemon_name }}.service"
+    state: link
+    force: yes
   when: mongodb_is_systemd
   notify: reload systemd
 
@@ -40,14 +50,18 @@
     - (mongodb_version is not defined or mongodb_repository[mongodb_major_version] is not defined)
 
 - name: Add APT repository
-  apt_repository: repo="{{ mongodb_repository[item] }}" update_cache=yes
+  apt_repository:
+    repo: "{{ mongodb_repository[item] }}"
+    update_cache: yes
   with_items: "{{ mongodb_major_version }}"
   when: mongodb_package == 'mongodb-org'
 
 - name: Install MongoDB package
-  apt: name={{item}} state=present
+  apt:
+    name: "{{item}}"
+    state: present
   with_items:
-    - "{{mongodb_package}}"
+    - "{{ mongodb_package }}"
     - numactl
 
 - name: reload systemd
@@ -56,16 +70,22 @@
   when: mongodb_is_systemd
 
 - name: Install PyMongo package
-  apt: pkg=python-pymongo state=latest
+  apt:
+    name: python-pymongo
+    state: latest
   when: not mongodb_pymongo_from_pip
 
 - name: Install PIP
-  apt: pkg={{ item }}
+  apt:
+    name: "{{ item }}"
+    state: present
   with_items:
     - python-dev
     - python-pip
   when: mongodb_pymongo_from_pip
 
 - name: Install PyMongo from PIP
-  pip: name=pymongo state=latest
+  pip:
+    name: pymongo
+    state: latest
   when: mongodb_pymongo_from_pip
